@@ -1,0 +1,29 @@
+openapi: 3.0.3
+info:
+  title: AudioGeek Preferences Agent
+  description: Docs!
+  version: '1.0'
+paths:
+  /api/v1/sample:
+    get:
+      summary: Sample
+      description: Sample
+      tags:
+        - Sample
+      responses:
+        '200':
+          description: Sample
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sample'
+components:
+  schemas:
+    Sample:
+      type: object
+      properties:
+        sample:
+          type: string
+          description: sample
+      example:
+        sample: "sample"
