@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import static org.springframework.http.ResponseEntity.status;
 
 @ControllerAdvice
-public class GlobalExceptionHandler {
+class GlobalExceptionHandler {
     @ExceptionHandler(ApiException.class)
-    private ResponseEntity<ErrorResponse> ExceptionHandler(ApiException err) {
+    private ResponseEntity<ErrorResponse> apiException(ApiException err) {
         return status(err.getHttpStatus())
                 .body(new ErrorResponse(err.getCode(), err.getMessage()));
     }

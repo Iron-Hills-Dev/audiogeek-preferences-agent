@@ -15,7 +15,7 @@ import static java.util.stream.Collectors.toSet;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class GenreConverter {
+class GenreConverter {
 
     private final GenreFactory genreFactory;
 
@@ -26,7 +26,7 @@ public class GenreConverter {
                     .map(genreFactory::createGenre)
                     .collect(toSet());
         } catch (MyGenresDomainException err) {
-            throw new ApiException(err.getCode(), err.getMessage(), err.getHttpStatus());
+            throw new ApiException(err.getCode(), err.getMessage(), err.getData().getHttpStatus());
         }
     }
 

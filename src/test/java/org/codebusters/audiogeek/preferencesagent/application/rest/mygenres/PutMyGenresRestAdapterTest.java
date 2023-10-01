@@ -31,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class PutMyGenresRestAdapterTest {
+class PutMyGenresRestAdapterTest {
 
     private static final String PATH_PREFIX = "src/test/resources/application/rest/mygenres/";
     private static final Path CORRECT_REQUEST = Path.of(PATH_PREFIX + "put_request_correct.json");
