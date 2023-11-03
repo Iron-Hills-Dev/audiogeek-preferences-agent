@@ -3,7 +3,7 @@ package org.codebusters.audiogeek.preferencesagent.application.rest.mygenres;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.codebusters.audiogeek.preferencesagent.application.exception.ApiException;
-import org.codebusters.audiogeek.preferencesagent.domain.mygenres.exception.MyGenresDomainException;
+import org.codebusters.audiogeek.preferencesagent.domain.mygenres.exception.GenresException;
 import org.codebusters.audiogeek.preferencesagent.domain.mygenres.model.genre.Genre;
 import org.codebusters.audiogeek.preferencesagent.domain.mygenres.model.genre.GenreFactory;
 import org.springframework.stereotype.Component;
@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import java.util.Set;
 
 import static java.util.stream.Collectors.toSet;
+import static org.springframework.http.HttpStatus.NOT_ACCEPTABLE;
 
 @Component
 @RequiredArgsConstructor
@@ -25,8 +26,8 @@ class GenreConverter {
             return genres.stream()
                     .map(genreFactory::createGenre)
                     .collect(toSet());
-        } catch (MyGenresDomainException err) {
-            throw new ApiException(err.getCode(), err.getMessage(), err.getData().getHttpStatus());
+        } catch (GenresException err) {
+            throw new ApiException(err.code(), err.message(), NOT_ACCEPTABLE);
         }
     }
 
