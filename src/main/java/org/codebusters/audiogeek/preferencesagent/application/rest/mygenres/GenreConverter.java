@@ -13,6 +13,9 @@ import java.util.Set;
 import static java.util.stream.Collectors.toSet;
 import static org.springframework.http.HttpStatus.NOT_ACCEPTABLE;
 
+/**
+ * Converting Genre class to string and vice versa
+ */
 @Component
 @RequiredArgsConstructor
 @Slf4j
