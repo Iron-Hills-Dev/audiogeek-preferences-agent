@@ -20,12 +20,13 @@ import java.util.Set;
 import java.util.UUID;
 
 import static java.nio.file.Files.readString;
+import static org.codebusters.audiogeek.preferencesagent.application.exception.ApiErrorData.NOT_AUTHENTICATED;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -39,7 +40,6 @@ class GetMyGenresRestAdapterTest {
     static final String TEST_TOKEN_CORRECT = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJIVUVMTCIsInN1YiI6IkhVRUxMIiwiaWF0IjoxNjk5NjQ5NzYzLCJ1c2VyX2lkIjoiMjc0ZmZmMDItODExOC00OTIxLWI3ODItZTI3NjVhZWQ4YjAzIn0.GDvOyMPft_R18aZOtiG0pd4DNC6Wju58RAJWx3wY-aQ";
     static final String TEST_TOKEN_INVALID = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJIVUVMTCIsInN1YiI6IkhVRUxMIiwiaWF0IjoxNjk5NjQ5NzYzLCJ1c2VyX2lkIjoiMjc0ZmZmMDItODExOC00OTIxLWI3ODItZTI3NjVhZWQ4YjAzIn0.fCYLVPg1dSwqjpvNOaYae95AHMYwfW7IRAVbDl4qnqY";
 
-    static final Path UNAUTHORIZED_RESPONSE = Path.of(PATH_PREFIX + "unauthorized_response.json");
     private static final Path CORRECT_RESPONSE = Path.of(PATH_PREFIX + "get_response_correct.json");
     private static final Path EMPTY_RESPONSE = Path.of(PATH_PREFIX + "get_response_empty.json");
 
@@ -94,6 +94,7 @@ class GetMyGenresRestAdapterTest {
                         .contentType(APPLICATION_JSON)
                         .header(AUTHORIZATION, TEST_TOKEN_INVALID))
                 .andExpect(status().isUnauthorized())
-                .andExpect(content().json(readString(UNAUTHORIZED_RESPONSE)));
+                .andExpect(jsonPath("$.code", is(NOT_AUTHENTICATED.code())))
+                .andExpect(jsonPath("$.message", is(NOT_AUTHENTICATED.message())));
     }
 }

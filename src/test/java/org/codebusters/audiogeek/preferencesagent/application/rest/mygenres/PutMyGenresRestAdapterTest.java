@@ -19,8 +19,8 @@ import java.nio.file.Path;
 import java.util.Set;
 
 import static java.nio.file.Files.readAllBytes;
-import static java.nio.file.Files.readString;
 import static org.codebusters.audiogeek.preferencesagent.TestErrorData.GENRE_ERROR_TEST;
+import static org.codebusters.audiogeek.preferencesagent.application.exception.ApiErrorData.NOT_AUTHENTICATED;
 import static org.codebusters.audiogeek.preferencesagent.application.rest.mygenres.GetMyGenresRestAdapterTest.*;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.AdditionalMatchers.not;
@@ -30,7 +30,8 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.NOT_ACCEPTABLE;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -74,7 +75,6 @@ class PutMyGenresRestAdapterTest {
     @DisplayName("MyGenresRestAdapter - test if /my-genres PUT handles exception correctly")
     void putMyGenresError() throws Exception {
         // given
-        var err = GENRE_ERROR_TEST;
         doThrow(new GenresException(GENRE_ERROR_TEST)).when(genreFactory).createGenre("BAD");
 
         // when then
@@ -83,8 +83,8 @@ class PutMyGenresRestAdapterTest {
                         .content(readAllBytes(GENRE_VALIDATION_ERROR_REQUEST))
                         .header(AUTHORIZATION, TEST_TOKEN_CORRECT))
                 .andExpect(status().is(NOT_ACCEPTABLE.value()))
-                .andExpect(jsonPath("$.code", is(err.code())))
-                .andExpect(jsonPath("$.message", is(err.message())));
+                .andExpect(jsonPath("$.code", is(GENRE_ERROR_TEST.code())))
+                .andExpect(jsonPath("$.message", is(GENRE_ERROR_TEST.message())));
     }
 
     @Test
@@ -103,7 +103,8 @@ class PutMyGenresRestAdapterTest {
                         .content(readAllBytes(CORRECT_REQUEST))
                         .header(AUTHORIZATION, TEST_TOKEN_INVALID))
                 .andExpect(status().isUnauthorized())
-                .andExpect(content().json(readString(UNAUTHORIZED_RESPONSE)));
+                .andExpect(jsonPath("$.code", is(NOT_AUTHENTICATED.code())))
+                .andExpect(jsonPath("$.message", is(NOT_AUTHENTICATED.message())));
     }
 
 }
