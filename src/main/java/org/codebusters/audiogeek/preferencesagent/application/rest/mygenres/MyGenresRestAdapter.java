@@ -2,7 +2,6 @@ package org.codebusters.audiogeek.preferencesagent.application.rest.mygenres;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.codebusters.audiogeek.preferencesagent.application.auth.token.HuellTokenPayload;
 import org.codebusters.audiogeek.preferencesagent.domain.mygenres.GetMyGenresPort;
 import org.codebusters.audiogeek.preferencesagent.domain.mygenres.PutMyGenresPort;
 import org.codebusters.audiogeek.preferencesagent.domain.mygenres.model.UserID;
@@ -10,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import static org.codebusters.audiogeek.preferencesagent.application.auth.AuthUtility.extractHuellPayload;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 
@@ -25,21 +25,23 @@ class MyGenresRestAdapter {
 
     /**
      * Function handling /my-genres GET request
-     * @param token token authorizing user
+     *
+     * @param token          token authorizing user
      * @param authentication token payload via Spring Security
      * @return 200 OK and GetMyGenresResponse
      */
     @GetMapping(value = "/my-genres", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<GetMyGenresResponse> getMyGenres(@RequestHeader("Authorization") String token, Authentication authentication) {
         log.info("Processing GET request /my-genres");
-        var payload = (HuellTokenPayload) authentication.getPrincipal();
+        var payload = extractHuellPayload(authentication);
         return ResponseEntity.ok(new GetMyGenresResponse(genreConverter.toString(getMyGenresPort.getMyGenres(new UserID(payload.id())))));
     }
 
     /**
-     * Fuction handling /my-genres PUT request
-     * @param request request data (PutMyGenresRequest)
-     * @param token token authorizing user
+     * Function handling /my-genres PUT request
+     *
+     * @param request        request data (PutMyGenresRequest)
+     * @param token          token authorizing user
      * @param authentication token payload via Spring Security
      * @return 201 CREATED (set genres for user)
      */
@@ -47,7 +49,7 @@ class MyGenresRestAdapter {
     public ResponseEntity<Void> putMyGenres(@RequestBody PutMyGenresRequest request,
                                             @RequestHeader("Authorization") String token,
                                             Authentication authentication) {
-        var payload = (HuellTokenPayload) authentication.getPrincipal();
+        var payload = extractHuellPayload(authentication);
         log.info("Processing POST request /my-genres: request={}", request);
         putMyGenresPort.putMyGenres(new UserID(payload.id()), genreConverter.toGenres(request.genres()));
         return ResponseEntity.status(CREATED).build();

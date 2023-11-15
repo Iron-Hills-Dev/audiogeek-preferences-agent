@@ -15,6 +15,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 import static java.util.Optional.ofNullable;
+import static org.codebusters.audiogeek.preferencesagent.application.auth.AuthUtility.extractHuellPayload;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 /**
@@ -30,7 +31,11 @@ class UserAuthFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         var ctx = SecurityContextHolder.getContext();
         ctx.setAuthentication(null);
-        log.info("Authenticating request: {}", request.getRequestURL());
+        log.info("Authenticating request: \"{} {}\", host={}, user={}",
+                request.getMethod(),
+                request.getRequestURL(),
+                request.getRemoteHost(),
+                request.getRemoteUser());
 
         ofNullable(request.getHeader(AUTHORIZATION))
                 .map(t -> t.replace("Bearer ", ""))
@@ -41,8 +46,9 @@ class UserAuthFilter extends OncePerRequestFilter {
     private void registerPrincipal(String token, SecurityContext ctx) {
         try {
             ctx.setAuthentication(new UserAuthentication(huellToken.parse(token)));
+            log.info("Successfully authorised user: {}", extractHuellPayload(ctx.getAuthentication()).id().toString());
         } catch (Exception e) {
-            log.warn("Exception occurred while parsing token: token=\"{}\" e=\"{}\"", token, e.toString());
+            log.warn("Exception occurred while parsing token: e=\"{}\"", e.toString());
         }
     }
 }
