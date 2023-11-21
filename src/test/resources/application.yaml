@@ -1,0 +1,8 @@
+logging:
+  level:
+    root: info
+    org.codebusters: trace
+
+jwt:
+  secret: B8444269FC8F514C79FDE4631EE9EF22162211D
+  algorithm: hmacSHA256

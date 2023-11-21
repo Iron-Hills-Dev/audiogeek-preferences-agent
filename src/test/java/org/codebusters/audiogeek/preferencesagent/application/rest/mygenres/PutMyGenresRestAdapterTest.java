@@ -5,12 +5,14 @@ import org.codebusters.audiogeek.preferencesagent.domain.mygenres.PutMyGenresPor
 import org.codebusters.audiogeek.preferencesagent.domain.mygenres.exception.GenresException;
 import org.codebusters.audiogeek.preferencesagent.domain.mygenres.model.genre.Genre;
 import org.codebusters.audiogeek.preferencesagent.domain.mygenres.model.genre.GenreFactory;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.nio.file.Path;
@@ -18,9 +20,10 @@ import java.util.Set;
 
 import static java.nio.file.Files.readAllBytes;
 import static org.codebusters.audiogeek.preferencesagent.TestErrorData.GENRE_ERROR_TEST;
+import static org.codebusters.audiogeek.preferencesagent.application.exception.ApiErrorData.NOT_AUTHENTICATED;
+import static org.codebusters.audiogeek.preferencesagent.application.rest.mygenres.GetMyGenresRestAdapterTest.*;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.AdditionalMatchers.not;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -32,6 +35,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
+@DisplayName("MyGenresRestAdapter - /my-genres PUT")
 class PutMyGenresRestAdapterTest {
 
     private static final String PATH_PREFIX = "src/test/resources/application/rest/mygenres/";
@@ -49,36 +54,57 @@ class PutMyGenresRestAdapterTest {
     private GenreFactory genreFactory;
 
     @Test
+    @DisplayName("MyGenresRestAdapter - test if /my-genres PUT works correctly")
     void putMyGenresCorrect() throws Exception {
         // given
         Genre genre1 = genreFactory.createGenre("rock");
         Genre genre2 = genreFactory.createGenre("pop");
         doThrow(new AssertionError("Genres in body and genres given does not match"))
                 .when(putMyGenresPort)
-                .putMyGenres(any(), not(eq(Set.of(genre1, genre2))));
+                .putMyGenres(eq(TEST_ID), not(eq(Set.of(genre1, genre2))));
 
         // when then
         mvc.perform(put("/api/v1/my-genres")
                         .contentType(APPLICATION_JSON)
                         .content(readAllBytes(CORRECT_REQUEST))
-                        .header(AUTHORIZATION, "dummy-token"))
+                        .header(AUTHORIZATION, TEST_TOKEN_CORRECT))
                 .andExpect(status().isCreated());
     }
 
     @Test
+    @DisplayName("MyGenresRestAdapter - test if /my-genres PUT handles exception correctly")
     void putMyGenresError() throws Exception {
         // given
-        var err = GENRE_ERROR_TEST;
         doThrow(new GenresException(GENRE_ERROR_TEST)).when(genreFactory).createGenre("BAD");
 
         // when then
         mvc.perform(put("/api/v1/my-genres")
                         .contentType(APPLICATION_JSON)
                         .content(readAllBytes(GENRE_VALIDATION_ERROR_REQUEST))
-                        .header(AUTHORIZATION, "dummy-token"))
+                        .header(AUTHORIZATION, TEST_TOKEN_CORRECT))
                 .andExpect(status().is(NOT_ACCEPTABLE.value()))
-                .andExpect(jsonPath("$.code", is(err.code())))
-                .andExpect(jsonPath("$.message", is(err.message())));
+                .andExpect(jsonPath("$.code", is(GENRE_ERROR_TEST.code())))
+                .andExpect(jsonPath("$.message", is(GENRE_ERROR_TEST.message())));
+    }
+
+    @Test
+    @DisplayName("MyGenresRestAdapter - test if /my-genres PUT authorization works")
+    void putMyGenresUnauthorized() throws Exception {
+        // given
+        Genre genre1 = genreFactory.createGenre("rock");
+        Genre genre2 = genreFactory.createGenre("pop");
+        doThrow(new AssertionError("Genres in body and genres given does not match"))
+                .when(putMyGenresPort)
+                .putMyGenres(eq(TEST_ID), not(eq(Set.of(genre1, genre2))));
+
+        // when then
+        mvc.perform(put("/api/v1/my-genres")
+                        .contentType(APPLICATION_JSON)
+                        .content(readAllBytes(CORRECT_REQUEST))
+                        .header(AUTHORIZATION, TEST_TOKEN_INVALID))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.code", is(NOT_AUTHENTICATED.code())))
+                .andExpect(jsonPath("$.message", is(NOT_AUTHENTICATED.message())));
     }
 
 }

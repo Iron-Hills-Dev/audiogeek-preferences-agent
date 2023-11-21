@@ -18,4 +18,4 @@ jobs:
       - name: Install dependencies
         run: mvn dependency:go-offline
       - name: Run test suites
-        run: echo Tests will be run there as soon as they appear
+        run: mvn --batch-mode clean verify

@@ -1,4 +1,9 @@
 logging:
   level:
     root: info
-    org.codebusters: ${GAZER_LOG_LEVEL:info}
+    org.codebusters: ${AGENT_LOG_LEVEL:info}
+
+
+jwt:
+  secret: ${AGENT_SECRET}
+  algorithm: ${AGENT_JWT_ALGORITHM:hmacSHA512}
