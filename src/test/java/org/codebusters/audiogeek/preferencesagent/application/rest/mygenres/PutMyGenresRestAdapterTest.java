@@ -1,8 +1,9 @@
 package org.codebusters.audiogeek.preferencesagent.application.rest.mygenres;
 
-import org.codebusters.audiogeek.preferencesagent.domain.mygenres.GetMyGenresPort;
-import org.codebusters.audiogeek.preferencesagent.domain.mygenres.PutMyGenresPort;
+import org.codebusters.audiogeek.preferencesagent.domain.mygenres.MyGenresQueryPort;
+import org.codebusters.audiogeek.preferencesagent.domain.mygenres.MyGenresModifyPort;
 import org.codebusters.audiogeek.preferencesagent.domain.mygenres.exception.GenresException;
+import org.codebusters.audiogeek.preferencesagent.domain.mygenres.model.PutGenresCmd;
 import org.codebusters.audiogeek.preferencesagent.domain.mygenres.model.genre.Genre;
 import org.codebusters.audiogeek.preferencesagent.domain.mygenres.model.genre.GenreFactory;
 import org.junit.jupiter.api.DisplayName;
@@ -47,9 +48,9 @@ class PutMyGenresRestAdapterTest {
     private MockMvc mvc;
 
     @MockBean
-    private GetMyGenresPort getMyGenresPort; // TODO remove after domain implementation
+    private MyGenresQueryPort myGenresQueryPort; // TODO remove after domain implementation
     @MockBean
-    private PutMyGenresPort putMyGenresPort;
+    private MyGenresModifyPort myGenresModifyPort;
     @SpyBean
     private GenreFactory genreFactory;
 
@@ -60,8 +61,11 @@ class PutMyGenresRestAdapterTest {
         Genre genre1 = genreFactory.createGenre("rock");
         Genre genre2 = genreFactory.createGenre("pop");
         doThrow(new AssertionError("Genres in body and genres given does not match"))
-                .when(putMyGenresPort)
-                .putMyGenres(eq(TEST_ID), not(eq(Set.of(genre1, genre2))));
+                .when(myGenresModifyPort)
+                .putMyGenres(PutGenresCmd.builder()
+                        .id(eq(TEST_ID))
+                        .genres(not(eq(Set.of(genre1, genre2))))
+                        .build());
 
         // when then
         mvc.perform(put("/api/v1/my-genres")
@@ -94,8 +98,11 @@ class PutMyGenresRestAdapterTest {
         Genre genre1 = genreFactory.createGenre("rock");
         Genre genre2 = genreFactory.createGenre("pop");
         doThrow(new AssertionError("Genres in body and genres given does not match"))
-                .when(putMyGenresPort)
-                .putMyGenres(eq(TEST_ID), not(eq(Set.of(genre1, genre2))));
+                .when(myGenresModifyPort)
+                .putMyGenres(PutGenresCmd.builder()
+                        .id(eq(TEST_ID))
+                        .genres(not(eq(Set.of(genre1, genre2))))
+                        .build());
 
         // when then
         mvc.perform(put("/api/v1/my-genres")

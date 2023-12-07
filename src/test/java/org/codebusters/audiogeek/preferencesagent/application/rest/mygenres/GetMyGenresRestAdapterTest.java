@@ -1,7 +1,7 @@
 package org.codebusters.audiogeek.preferencesagent.application.rest.mygenres;
 
-import org.codebusters.audiogeek.preferencesagent.domain.mygenres.GetMyGenresPort;
-import org.codebusters.audiogeek.preferencesagent.domain.mygenres.PutMyGenresPort;
+import org.codebusters.audiogeek.preferencesagent.domain.mygenres.MyGenresQueryPort;
+import org.codebusters.audiogeek.preferencesagent.domain.mygenres.MyGenresModifyPort;
 import org.codebusters.audiogeek.preferencesagent.domain.mygenres.model.UserID;
 import org.codebusters.audiogeek.preferencesagent.domain.mygenres.model.genre.GenreFactory;
 import org.junit.jupiter.api.DisplayName;
@@ -49,16 +49,16 @@ class GetMyGenresRestAdapterTest {
     private MockMvc mvc;
 
     @MockBean
-    private GetMyGenresPort getMyGenresPort;
+    private MyGenresQueryPort myGenresQueryPort;
     @MockBean
-    private PutMyGenresPort putMyGenresPort; // TODO remove after domain implementation
+    private MyGenresModifyPort myGenresModifyPort; // TODO remove after domain implementation
 
     @Test
     @DisplayName("MyGenresRestAdapter - test if /my-genres GET works correctly")
     void getMyGenresCorrect() throws Exception {
         // given
         doReturn(Set.of(genreFactory.createGenre("rock"), genreFactory.createGenre("pop")))
-                .when(getMyGenresPort).getMyGenres(TEST_ID);
+                .when(myGenresQueryPort).getMyGenres(TEST_ID);
 
         // when then
         mvc.perform(get("/api/v1/my-genres")
@@ -72,7 +72,7 @@ class GetMyGenresRestAdapterTest {
     @DisplayName("MyGenresRestAdapter - test if /my-genres GET works correctly when genres are empty")
     void getMyGenresEmpty() throws Exception {
         // given
-        doReturn(Set.of()).when(getMyGenresPort).getMyGenres(TEST_ID);
+        doReturn(Set.of()).when(myGenresQueryPort).getMyGenres(TEST_ID);
 
         // when then
         mvc.perform(get("/api/v1/my-genres")
@@ -87,7 +87,7 @@ class GetMyGenresRestAdapterTest {
     void getMyGenresNotAuthorized() throws Exception {
         // given
         doReturn(Set.of(genreFactory.createGenre("rock"), genreFactory.createGenre("pop")))
-                .when(getMyGenresPort).getMyGenres(TEST_ID);
+                .when(myGenresQueryPort).getMyGenres(TEST_ID);
 
         // when then
         mvc.perform(get("/api/v1/my-genres")

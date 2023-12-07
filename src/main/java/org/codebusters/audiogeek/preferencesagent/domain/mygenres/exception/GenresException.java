@@ -20,8 +20,7 @@ public class GenresException extends RuntimeException {
     @Accessors(fluent = true)
     @RequiredArgsConstructor
     public enum GenreExceptionData implements ErrorData {
-        // TODO add genre errors
-        DUMMY_ERROR("", "");
+        DUMMY("", "");
         private final String code;
         private final String message;
     }

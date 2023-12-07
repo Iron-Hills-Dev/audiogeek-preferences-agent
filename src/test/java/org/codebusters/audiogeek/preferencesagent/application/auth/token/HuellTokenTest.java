@@ -1,7 +1,7 @@
 package org.codebusters.audiogeek.preferencesagent.application.auth.token;
 
-import org.codebusters.audiogeek.preferencesagent.domain.mygenres.GetMyGenresPort;
-import org.codebusters.audiogeek.preferencesagent.domain.mygenres.PutMyGenresPort;
+import org.codebusters.audiogeek.preferencesagent.domain.mygenres.MyGenresQueryPort;
+import org.codebusters.audiogeek.preferencesagent.domain.mygenres.MyGenresModifyPort;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +25,9 @@ public class HuellTokenTest {
 
     // TODO remove after domain implementation
     @MockBean
-    private GetMyGenresPort getMyGenresPort;
+    private MyGenresQueryPort myGenresQueryPort;
     @MockBean
-    private PutMyGenresPort putMyGenresPort;
+    private MyGenresModifyPort myGenresModifyPort;
 
     @Test
     @DisplayName("HuellToken - test if token parses correctly")
