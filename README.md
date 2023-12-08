@@ -12,3 +12,5 @@
 | hmacSHA384           | HS384     |
 | hmacSHA512 (default) | HS512     |
 
+* `AGENT_GENRE_MAX_LENGTH` Specifies max length of genre (default: 100)
+* `AGENT_GENRE_CHAR_WHITELIST` Only characters on this list will be approved to be used in genre (by default whitelist is off)

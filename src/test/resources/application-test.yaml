@@ -19,3 +19,8 @@ spring:
 jwt:
   secret: B8444269FC8F514C79FDE4631EE9EF22162211D
   algorithm: hmacSHA256
+
+agent:
+  genre:
+    max-length: 10
+    char-whitelist: []

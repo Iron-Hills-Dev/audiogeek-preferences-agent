@@ -3,7 +3,11 @@ logging:
     root: info
     org.codebusters: ${AGENT_LOG_LEVEL:info}
 
-
 jwt:
   secret: ${AGENT_SECRET}
   algorithm: ${AGENT_JWT_ALGORITHM:hmacSHA512}
+
+agent:
+  genre:
+    max-length: ${AGENT_GENRE_MAX_LENGTH:100}
+    char-whitelist: ${AGENT_GENRE_CHAR_WHITELIST:}

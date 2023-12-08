@@ -7,21 +7,29 @@ import org.codebusters.audiogeek.preferencesagent.domain.exception.ErrorData;
 
 @Getter
 @Accessors(fluent = true)
-public class GenresException extends RuntimeException {
+public class GenreException extends RuntimeException {
     private final String code;
     private final String message;
 
-    public GenresException(ErrorData data) {
+    public GenreException(ErrorData data, Object... args) {
         code = data.code();
-        message = data.message();
+        message = data.message().formatted(args);
     }
 
     @Getter
     @Accessors(fluent = true)
     @RequiredArgsConstructor
     public enum GenreExceptionData implements ErrorData {
-        DUMMY("", "");
+        TOO_LONG("GE_TL", "Genre is too long: %s>%s"),
+        ILLEGAL_CHAR("GE_IC", "Genre contains illegal character: %s"),
+        BLANK("GE_B", "Provided genre is blank"),
+        NULL("GE_N", "Genre is null");
         private final String code;
         private final String message;
+    }
+
+    @Override
+    public String getMessage() {
+        return message;
     }
 }

@@ -1,9 +1,8 @@
 package org.codebusters.audiogeek.preferencesagent.application.rest.mygenres;
 
-import org.codebusters.audiogeek.preferencesagent.domain.mygenres.MyGenresQueryPort;
 import org.codebusters.audiogeek.preferencesagent.domain.mygenres.MyGenresModifyPort;
-import org.codebusters.audiogeek.preferencesagent.domain.mygenres.exception.GenresException;
-import org.codebusters.audiogeek.preferencesagent.domain.mygenres.model.PutGenresCmd;
+import org.codebusters.audiogeek.preferencesagent.domain.mygenres.MyGenresQueryPort;
+import org.codebusters.audiogeek.preferencesagent.domain.mygenres.exception.GenreException;
 import org.codebusters.audiogeek.preferencesagent.domain.mygenres.model.genre.Genre;
 import org.codebusters.audiogeek.preferencesagent.domain.mygenres.model.genre.GenreFactory;
 import org.junit.jupiter.api.DisplayName;
@@ -24,8 +23,7 @@ import static org.codebusters.audiogeek.preferencesagent.TestErrorData.GENRE_ERR
 import static org.codebusters.audiogeek.preferencesagent.application.exception.ApiErrorData.NOT_AUTHENTICATED;
 import static org.codebusters.audiogeek.preferencesagent.application.rest.mygenres.GetMyGenresRestAdapterTest.*;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.AdditionalMatchers.not;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.NOT_ACCEPTABLE;
@@ -62,10 +60,8 @@ class PutMyGenresRestAdapterTest {
         Genre genre2 = genreFactory.createGenre("pop");
         doThrow(new AssertionError("Genres in body and genres given does not match"))
                 .when(myGenresModifyPort)
-                .putMyGenres(PutGenresCmd.builder()
-                        .id(eq(TEST_ID))
-                        .genres(not(eq(Set.of(genre1, genre2))))
-                        .build());
+                .putMyGenres(argThat(cmd ->
+                        cmd.id().equals(TEST_ID) && !cmd.genres().equals(Set.of(genre1, genre2))));
 
         // when then
         mvc.perform(put("/api/v1/my-genres")
@@ -79,7 +75,7 @@ class PutMyGenresRestAdapterTest {
     @DisplayName("MyGenresRestAdapter - test if /my-genres PUT handles exception correctly")
     void putMyGenresError() throws Exception {
         // given
-        doThrow(new GenresException(GENRE_ERROR_TEST)).when(genreFactory).createGenre("BAD");
+        doThrow(new GenreException(GENRE_ERROR_TEST)).when(genreFactory).createGenre("BAD");
 
         // when then
         mvc.perform(put("/api/v1/my-genres")
@@ -99,10 +95,8 @@ class PutMyGenresRestAdapterTest {
         Genre genre2 = genreFactory.createGenre("pop");
         doThrow(new AssertionError("Genres in body and genres given does not match"))
                 .when(myGenresModifyPort)
-                .putMyGenres(PutGenresCmd.builder()
-                        .id(eq(TEST_ID))
-                        .genres(not(eq(Set.of(genre1, genre2))))
-                        .build());
+                .putMyGenres(argThat(cmd ->
+                        cmd.id().equals(TEST_ID) && !cmd.genres().equals(Set.of(genre1, genre2))));
 
         // when then
         mvc.perform(put("/api/v1/my-genres")

@@ -3,7 +3,7 @@ package org.codebusters.audiogeek.preferencesagent.domain.mygenres.util;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.codebusters.audiogeek.preferencesagent.application.exception.ApiException;
-import org.codebusters.audiogeek.preferencesagent.domain.mygenres.exception.GenresException;
+import org.codebusters.audiogeek.preferencesagent.domain.mygenres.exception.GenreException;
 import org.codebusters.audiogeek.preferencesagent.domain.mygenres.model.genre.Genre;
 import org.codebusters.audiogeek.preferencesagent.domain.mygenres.model.genre.GenreFactory;
 import org.codebusters.audiogeek.preferencesagent.infrastructure.mygenres.db.GenreEntity;
@@ -27,7 +27,7 @@ public class GenreUtils {
             return genres.stream()
                     .map(genreFactory::createGenre)
                     .collect(toSet());
-        } catch (GenresException err) {
+        } catch (GenreException err) {
             throw new ApiException(err.code(), err.message(), NOT_ACCEPTABLE);
         }
     }
@@ -38,8 +38,6 @@ public class GenreUtils {
                 .map(Genre::value)
                 .collect(toSet());
     }
-
-
 
     public Set<Genre> entityToGenres(Set<GenreEntity> genres) {
         return genres.stream()

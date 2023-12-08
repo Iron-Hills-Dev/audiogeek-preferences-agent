@@ -1,7 +1,6 @@
 package org.codebusters.audiogeek.preferencesagent.application.rest.mygenres;
 
 import org.codebusters.audiogeek.preferencesagent.domain.mygenres.MyGenresQueryPort;
-import org.codebusters.audiogeek.preferencesagent.domain.mygenres.MyGenresModifyPort;
 import org.codebusters.audiogeek.preferencesagent.domain.mygenres.model.UserID;
 import org.codebusters.audiogeek.preferencesagent.domain.mygenres.model.genre.GenreFactory;
 import org.junit.jupiter.api.DisplayName;
@@ -50,8 +49,6 @@ class GetMyGenresRestAdapterTest {
 
     @MockBean
     private MyGenresQueryPort myGenresQueryPort;
-    @MockBean
-    private MyGenresModifyPort myGenresModifyPort; // TODO remove after domain implementation
 
     @Test
     @DisplayName("MyGenresRestAdapter - test if /my-genres GET works correctly")
