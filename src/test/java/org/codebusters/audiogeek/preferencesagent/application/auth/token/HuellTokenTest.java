@@ -1,18 +1,18 @@
 package org.codebusters.audiogeek.preferencesagent.application.auth.token;
 
-import org.codebusters.audiogeek.preferencesagent.domain.mygenres.MyGenresQueryPort;
+import org.codebusters.audiogeek.preferencesagent.shared.huelltoken.HuellToken;
+import org.codebusters.audiogeek.preferencesagent.shared.huelltoken.HuellTokenException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.codebusters.audiogeek.preferencesagent.application.auth.token.ErrorData.*;
+import static org.codebusters.audiogeek.preferencesagent.shared.huelltoken.ErrorData.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -21,10 +21,6 @@ public class HuellTokenTest {
 
     @Autowired
     private HuellToken huellToken;
-
-    // TODO remove after domain implementation
-    @MockBean
-    private MyGenresQueryPort myGenresQueryPort;
 
     @Test
     @DisplayName("HuellToken - test if token parses correctly")

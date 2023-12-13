@@ -9,6 +9,7 @@ import java.util.UUID;
 import static jakarta.persistence.CascadeType.PERSIST;
 import static jakarta.persistence.FetchType.EAGER;
 
+@Setter
 @Entity
 @Builder
 @Getter
@@ -18,11 +19,9 @@ import static jakarta.persistence.FetchType.EAGER;
 @Table(name = "user-genre")
 public class UserEntity {
     @Id
-    @Setter
     @Column(name = "id")
     private UUID id;
 
-    @Setter
     @ManyToMany(cascade = PERSIST, fetch = EAGER)
     @JoinTable(name = "user_genre",
             joinColumns = @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "ag_userId_fk")),

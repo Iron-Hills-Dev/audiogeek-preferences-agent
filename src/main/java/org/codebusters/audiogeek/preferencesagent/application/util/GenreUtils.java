@@ -1,4 +1,4 @@
-package org.codebusters.audiogeek.preferencesagent.domain.mygenres.util;
+package org.codebusters.audiogeek.preferencesagent.application.util;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

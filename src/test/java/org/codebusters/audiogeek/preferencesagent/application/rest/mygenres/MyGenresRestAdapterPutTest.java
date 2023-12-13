@@ -1,7 +1,6 @@
 package org.codebusters.audiogeek.preferencesagent.application.rest.mygenres;
 
 import org.codebusters.audiogeek.preferencesagent.domain.mygenres.MyGenresModifyPort;
-import org.codebusters.audiogeek.preferencesagent.domain.mygenres.MyGenresQueryPort;
 import org.codebusters.audiogeek.preferencesagent.domain.mygenres.exception.GenreException;
 import org.codebusters.audiogeek.preferencesagent.domain.mygenres.model.genre.Genre;
 import org.codebusters.audiogeek.preferencesagent.domain.mygenres.model.genre.GenreFactory;
@@ -21,7 +20,7 @@ import java.util.Set;
 import static java.nio.file.Files.readAllBytes;
 import static org.codebusters.audiogeek.preferencesagent.TestErrorData.GENRE_ERROR_TEST;
 import static org.codebusters.audiogeek.preferencesagent.application.exception.ApiErrorData.NOT_AUTHENTICATED;
-import static org.codebusters.audiogeek.preferencesagent.application.rest.mygenres.GetMyGenresRestAdapterTest.*;
+import static org.codebusters.audiogeek.preferencesagent.application.rest.mygenres.MyGenresRestAdapterGetTest.*;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.doThrow;
@@ -36,7 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @DisplayName("MyGenresRestAdapter - /my-genres PUT")
-class PutMyGenresRestAdapterTest {
+class MyGenresRestAdapterPutTest {
 
     private static final String PATH_PREFIX = "src/test/resources/application/rest/mygenres/";
     private static final Path CORRECT_REQUEST = Path.of(PATH_PREFIX + "put_request_correct.json");
@@ -45,8 +44,6 @@ class PutMyGenresRestAdapterTest {
     @Autowired
     private MockMvc mvc;
 
-    @MockBean
-    private MyGenresQueryPort myGenresQueryPort; // TODO remove after domain implementation
     @MockBean
     private MyGenresModifyPort myGenresModifyPort;
     @SpyBean

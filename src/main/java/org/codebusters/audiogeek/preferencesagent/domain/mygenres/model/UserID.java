@@ -4,5 +4,5 @@ import lombok.NonNull;
 
 import java.util.UUID;
 
-public record UserID(@NonNull UUID id) {
+public record UserID(@NonNull UUID value) {
 }

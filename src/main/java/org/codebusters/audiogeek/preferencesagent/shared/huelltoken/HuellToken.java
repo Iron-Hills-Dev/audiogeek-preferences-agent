@@ -1,4 +1,4 @@
-package org.codebusters.audiogeek.preferencesagent.application.auth.token;
+package org.codebusters.audiogeek.preferencesagent.shared.huelltoken;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -11,7 +11,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.util.UUID;
 
 import static io.jsonwebtoken.Jwts.parser;
-import static org.codebusters.audiogeek.preferencesagent.application.auth.token.ErrorData.*;
+import static org.codebusters.audiogeek.preferencesagent.shared.huelltoken.ErrorData.*;
 
 
 @Slf4j

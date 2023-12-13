@@ -27,7 +27,7 @@ public class JpaMyGenresModifyAdapter implements MyGenresModifyPort {
     public void putMyGenres(PutGenresCmd cmd) {
         log.debug("Handling PutGenresCmd: {}", cmd.toString());
         var genreEntities = cmd.genres().stream().map(this::findGenreEntity).collect(toSet());
-        var user = userRepo.findById(cmd.id().id());
+        var user = userRepo.findById(cmd.id().value());
         user.ifPresentOrElse(u -> handleUserUpdate(u, genreEntities), () -> handleUserDoNotExists(cmd.id(), genreEntities));
         log.debug("PutGenresCmd handled successfully");
     }
@@ -47,11 +47,11 @@ public class JpaMyGenresModifyAdapter implements MyGenresModifyPort {
     private void handleUserDoNotExists(UserID id, Set<GenreEntity> genres) {
         log.debug("User does not exists - creating entity");
         var entity = UserEntity.builder()
-                .id(id.id())
+                .id(id.value())
                 .genres(genres)
                 .build();
         userRepo.save(entity);
-        log.debug("Created new user: id={}", id.id());
+        log.debug("Created new user: id={}", id.value());
     }
 
     private void handleUserUpdate(UserEntity user, Set<GenreEntity> genres) {

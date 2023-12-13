@@ -1,6 +1,7 @@
 package org.codebusters.audiogeek.preferencesagent.application.rest.mygenres;
 
 import org.codebusters.audiogeek.preferencesagent.domain.mygenres.MyGenresQueryPort;
+import org.codebusters.audiogeek.preferencesagent.domain.mygenres.exception.UserNotFoundException;
 import org.codebusters.audiogeek.preferencesagent.domain.mygenres.model.UserID;
 import org.codebusters.audiogeek.preferencesagent.domain.mygenres.model.genre.GenreFactory;
 import org.junit.jupiter.api.DisplayName;
@@ -22,6 +23,7 @@ import static java.nio.file.Files.readString;
 import static org.codebusters.audiogeek.preferencesagent.application.exception.ApiErrorData.NOT_AUTHENTICATED;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -32,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
 @DisplayName("MyGenresRestAdapter - /my-genres GET")
-class GetMyGenresRestAdapterTest {
+class MyGenresRestAdapterGetTest {
     private static final String PATH_PREFIX = "src/test/resources/application/rest/mygenres/";
 
     static final UserID TEST_ID = new UserID(UUID.fromString("274fff02-8118-4921-b782-e2765aed8b03"));
@@ -41,6 +43,7 @@ class GetMyGenresRestAdapterTest {
 
     private static final Path CORRECT_RESPONSE = Path.of(PATH_PREFIX + "get_response_correct.json");
     private static final Path EMPTY_RESPONSE = Path.of(PATH_PREFIX + "get_response_empty.json");
+
 
     @Autowired
     private GenreFactory genreFactory;
@@ -77,6 +80,22 @@ class GetMyGenresRestAdapterTest {
                         .header(AUTHORIZATION, TEST_TOKEN_CORRECT))
                 .andExpect(status().isOk())
                 .andExpect(content().json(readString(EMPTY_RESPONSE)));
+    }
+
+    @Test
+    @DisplayName("MyGenresRestAdapter - test if /my-genres GET works correctly when user to not exists")
+    void getMyGenresUserDoNotExists() throws Exception {
+        // given
+        doThrow(UserNotFoundException.class).when(myGenresQueryPort).getMyGenres(TEST_ID);
+        var expected = new UserNotFoundException();
+
+        // when then
+        mvc.perform(get("/api/v1/my-genres")
+                        .contentType(APPLICATION_JSON)
+                        .header(AUTHORIZATION, TEST_TOKEN_CORRECT))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code", is(expected.code)))
+                .andExpect(jsonPath("$.message", is(expected.message)));
     }
 
     @Test
