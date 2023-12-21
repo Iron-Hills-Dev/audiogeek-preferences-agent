@@ -1,9 +1,8 @@
 package org.codebusters.audiogeek.preferencesagent.infrastructure.mygenres;
 
-import org.codebusters.audiogeek.preferencesagent.domain.mygenres.exception.UserNotFoundException;
-import org.codebusters.audiogeek.preferencesagent.domain.mygenres.model.PutGenresCmd;
-import org.codebusters.audiogeek.preferencesagent.domain.mygenres.model.UserID;
+import org.codebusters.audiogeek.preferencesagent.domain.mygenres.PutGenresCmd;
 import org.codebusters.audiogeek.preferencesagent.domain.mygenres.model.genre.GenreFactory;
+import org.codebusters.audiogeek.preferencesagent.domain.mygenres.model.user.UserID;
 import org.codebusters.audiogeek.preferencesagent.infrastructure.mygenres.db.repo.GenreRepository;
 import org.codebusters.audiogeek.preferencesagent.infrastructure.mygenres.db.repo.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,10 +13,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Set;
+import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -25,14 +24,14 @@ class JpaMyGenresQueryAdapterTest {
     @Autowired
     private JpaMyGenresModifyAdapter modifyAdapter;
     @Autowired
-    private JpaMyGenresQueryAdapter queryAdapter;
-    @Autowired
     private GenreRepository genreRepo;
     @Autowired
     private UserRepository userRepo;
     @Autowired
     private GenreFactory genreFactory;
 
+    @Autowired
+    private JpaMyGenresQueryAdapter sut;
 
     @BeforeEach
     void clearDatabase() {
@@ -54,13 +53,12 @@ class JpaMyGenresQueryAdapterTest {
         modifyAdapter.putMyGenres(cmd);
 
         // then
-        assertThat(queryAdapter.getMyGenres(cmd.id())).contains(genre);
+        assertThat(sut.getMyGenres(cmd.id())).contains(genre);
     }
 
     @Test
-    @DisplayName("Test if getMyGenres handles not existing user")
+    @DisplayName("Test if getMyGenres handles user not in DB")
     void getGenresDoNotExists() {
-        assertThatThrownBy(() -> queryAdapter.getMyGenres(new UserID(randomUUID())))
-                .isInstanceOf(UserNotFoundException.class);
+        assertThat(sut.getMyGenres(new UserID(UUID.randomUUID()))).isEqualTo(Set.of());
     }
 }

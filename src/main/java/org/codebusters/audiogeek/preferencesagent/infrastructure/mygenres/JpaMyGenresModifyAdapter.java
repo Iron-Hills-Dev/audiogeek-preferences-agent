@@ -4,8 +4,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.codebusters.audiogeek.preferencesagent.domain.mygenres.MyGenresModifyPort;
-import org.codebusters.audiogeek.preferencesagent.domain.mygenres.model.PutGenresCmd;
-import org.codebusters.audiogeek.preferencesagent.domain.mygenres.model.UserID;
+import org.codebusters.audiogeek.preferencesagent.domain.mygenres.PutGenresCmd;
+import org.codebusters.audiogeek.preferencesagent.domain.mygenres.model.user.UserID;
 import org.codebusters.audiogeek.preferencesagent.domain.mygenres.model.genre.Genre;
 import org.codebusters.audiogeek.preferencesagent.infrastructure.mygenres.db.GenreEntity;
 import org.codebusters.audiogeek.preferencesagent.infrastructure.mygenres.db.UserEntity;
@@ -28,10 +28,12 @@ public class JpaMyGenresModifyAdapter implements MyGenresModifyPort {
         log.debug("Handling PutGenresCmd: {}", cmd.toString());
         var genreEntities = cmd.genres().stream().map(this::findGenreEntity).collect(toSet());
         var user = userRepo.findById(cmd.id().value());
-        user.ifPresentOrElse(u -> handleUserUpdate(u, genreEntities), () -> handleUserDoNotExists(cmd.id(), genreEntities));
+        user.ifPresentOrElse(u -> handleUserCreation(u, genreEntities), () -> handleUserDoNotExists(cmd.id(), genreEntities));
         log.debug("PutGenresCmd handled successfully");
     }
 
+    //TODO: to improve performance we could find genre collection with one DB request
+    // then we could persist entire collection of missing genres with one DB request
     private GenreEntity findGenreEntity(Genre genre) {
         log.trace("Searching for genre entity: {}", genre.value());
         var entity = genreRepo.findByName(genre.value());
@@ -54,7 +56,7 @@ public class JpaMyGenresModifyAdapter implements MyGenresModifyPort {
         log.debug("Created new user: id={}", id.value());
     }
 
-    private void handleUserUpdate(UserEntity user, Set<GenreEntity> genres) {
+    private void handleUserCreation(UserEntity user, Set<GenreEntity> genres) {
         log.trace("User exists - updating genres");
         user.setGenres(genres);
         userRepo.save(user);

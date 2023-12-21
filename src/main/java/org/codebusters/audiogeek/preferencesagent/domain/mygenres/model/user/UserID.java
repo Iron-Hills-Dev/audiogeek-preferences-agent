@@ -1,4 +1,4 @@
-package org.codebusters.audiogeek.preferencesagent.domain.mygenres.model;
+package org.codebusters.audiogeek.preferencesagent.domain.mygenres.model.user;
 
 import lombok.NonNull;
 

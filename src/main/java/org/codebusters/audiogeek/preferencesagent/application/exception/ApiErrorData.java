@@ -14,7 +14,6 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 public enum ApiErrorData implements ErrorData {
     NOT_AUTHENTICATED("API_NA", "Not authenticated request.", UNAUTHORIZED);
 
-
     private final String code;
     private final String message;
     private final HttpStatus status;

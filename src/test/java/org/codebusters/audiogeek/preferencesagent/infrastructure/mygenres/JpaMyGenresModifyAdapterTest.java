@@ -1,7 +1,8 @@
 package org.codebusters.audiogeek.preferencesagent.infrastructure.mygenres;
 
-import org.codebusters.audiogeek.preferencesagent.domain.mygenres.model.PutGenresCmd;
-import org.codebusters.audiogeek.preferencesagent.domain.mygenres.model.UserID;
+import lombok.extern.slf4j.Slf4j;
+import org.codebusters.audiogeek.preferencesagent.domain.mygenres.PutGenresCmd;
+import org.codebusters.audiogeek.preferencesagent.domain.mygenres.model.user.UserID;
 import org.codebusters.audiogeek.preferencesagent.domain.mygenres.model.genre.Genre;
 import org.codebusters.audiogeek.preferencesagent.domain.mygenres.model.genre.GenreFactory;
 import org.codebusters.audiogeek.preferencesagent.infrastructure.mygenres.db.GenreEntity;
@@ -23,6 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @ActiveProfiles("test")
+@Slf4j
 public class JpaMyGenresModifyAdapterTest {
     @Autowired
     private GenreFactory genreFactory;
@@ -31,7 +33,7 @@ public class JpaMyGenresModifyAdapterTest {
     @Autowired
     private UserRepository userRepo;
     @Autowired
-    private JpaMyGenresModifyAdapter adapter;
+    private JpaMyGenresModifyAdapter sut;
 
     @BeforeEach
     void clearDatabase() {
@@ -40,8 +42,8 @@ public class JpaMyGenresModifyAdapterTest {
     }
 
     @Test
-    @DisplayName("Test if putMyGenres works correctly for not existing user")
-    void putGenresUserDoNotExists() {
+    @DisplayName("Test if putMyGenres works correctly for user and genres not in DB")
+    void putGenresUserNotInDbGenreNotInDb() {
         // given
         var cmd = PutGenresCmd.builder()
                 .id(new UserID(randomUUID()))
@@ -49,7 +51,7 @@ public class JpaMyGenresModifyAdapterTest {
                 .build();
 
         // when
-        adapter.putMyGenres(cmd);
+        sut.putMyGenres(cmd);
 
         // then
         var exceptedEntity = UserEntity.builder()
@@ -66,17 +68,17 @@ public class JpaMyGenresModifyAdapterTest {
     }
 
     @Test
-    @DisplayName("Test if putMyGenres works correctly for existing user")
-    void putGenresUserExists() {
+    @DisplayName("Test if putMyGenres works correctly for user with no genres in DB and genres not in DB")
+    void putGenresUserWithNoGenresGenreNotInDb() {
         // given
         var cmd = PutGenresCmd.builder()
                 .id(new UserID(randomUUID()))
                 .genres(Set.of(genreFactory.createGenre("rock"), genreFactory.createGenre("pop")))
                 .build();
-
-        // when
         userRepo.save(UserEntity.builder().id(cmd.id().value()).genres(Set.of()).build());
-        adapter.putMyGenres(cmd);
+
+        // when
+        sut.putMyGenres(cmd);
 
         // then
         var exceptedEntity = UserEntity.builder()
@@ -93,17 +95,17 @@ public class JpaMyGenresModifyAdapterTest {
     }
 
     @Test
-    @DisplayName("Test if putMyGenres works correctly for existing genre")
-    void putGenresGenreExists() {
+    @DisplayName("Test if putMyGenres works correctly for user not in DB and genre in DB")
+    void putGenresUserNotInDbGenreInDb() {
         // given
         var cmd = PutGenresCmd.builder()
                 .id(new UserID(randomUUID()))
-                .genres(Set.of(genreFactory.createGenre("rock"), genreFactory.createGenre("pop")))
+                .genres(Set.of(genreFactory.createGenre("rock")))
                 .build();
+        genreRepo.save(new GenreEntity("rock"));
 
         // when
-        genreRepo.save(new GenreEntity("rock"));
-        adapter.putMyGenres(cmd);
+        sut.putMyGenres(cmd);
 
         // then
         var exceptedEntity = UserEntity.builder()
@@ -118,6 +120,65 @@ public class JpaMyGenresModifyAdapterTest {
                 .usingOverriddenEquals()
                 .isEqualTo(exceptedEntity);
     }
+
+    @Test
+    @DisplayName("Test if putMyGenres works correctly for user in DB with genre, genre added not in DB")
+    void putGenresUserWithGenre() {
+        // given
+        var cmd = PutGenresCmd.builder()
+                .id(new UserID(randomUUID()))
+                .genres(Set.of(genreFactory.createGenre("indie"), genreFactory.createGenre("pop")))
+                .build();
+        genreRepo.save(new GenreEntity("rock"));
+        userRepo.save(UserEntity.builder()
+                .id(cmd.id().value())
+                .genres(Set.of(genreRepo.findByName("rock").get()))
+                .build());
+
+        // when
+        sut.putMyGenres(cmd);
+
+        // then
+        var exceptedEntity = UserEntity.builder()
+                .id(cmd.id().value())
+                .genres(genresToEntity(cmd.genres()))
+                .build();
+
+        assertThat(userRepo.findById(cmd.id().value()))
+                .isNotEmpty()
+                .get()
+                .usingRecursiveComparison()
+                .usingOverriddenEquals()
+                .isEqualTo(exceptedEntity);
+    }
+
+    @Test
+    @DisplayName("Test what happens with genre table when genre is removed from user table")
+    void putGenresDeleteGenre() {
+        // given
+        var cmd = PutGenresCmd.builder()
+                .id(new UserID(randomUUID()))
+                .genres(Set.of(genreFactory.createGenre("metal")))
+                .build();
+        genreRepo.save(new GenreEntity("rock"));
+        userRepo.save(UserEntity.builder()
+                .id(cmd.id().value())
+                .genres(Set.of(genreRepo.findByName("rock").get()))
+                .build());
+
+        // when
+        sut.putMyGenres(cmd);
+
+        // then
+        genreRepo.findByName("rock").ifPresentOrElse(
+                g -> log.warn("Genre still exists after removal"),
+                () -> log.warn("Genre do not exists after removal")
+        );
+    }
+
+    //TODO: add multi threaded test
+    // given: two commands with the same user but different genres
+    // when: persis in two concurrent threads
 
     private Set<GenreEntity> genresToEntity(Set<Genre> genres) {
         return genres.stream()

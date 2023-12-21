@@ -6,7 +6,6 @@ import org.codebusters.audiogeek.preferencesagent.application.exception.ApiExcep
 import org.codebusters.audiogeek.preferencesagent.domain.mygenres.exception.GenreException;
 import org.codebusters.audiogeek.preferencesagent.domain.mygenres.model.genre.Genre;
 import org.codebusters.audiogeek.preferencesagent.domain.mygenres.model.genre.GenreFactory;
-import org.codebusters.audiogeek.preferencesagent.infrastructure.mygenres.db.GenreEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.Set;
@@ -36,12 +35,6 @@ public class GenreUtils {
         log.trace("Converting genres to string");
         return genres.stream()
                 .map(Genre::value)
-                .collect(toSet());
-    }
-
-    public Set<Genre> entityToGenres(Set<GenreEntity> genres) {
-        return genres.stream()
-                .map(g -> genreFactory.createGenre(g.getName()))
                 .collect(toSet());
     }
 }

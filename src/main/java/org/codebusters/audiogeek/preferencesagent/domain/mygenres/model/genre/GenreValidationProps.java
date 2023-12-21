@@ -1,4 +1,4 @@
 package org.codebusters.audiogeek.preferencesagent.domain.mygenres.model.genre;
 
-record GenreValidationConfig(Integer maxLength, String whitelist) {
+record GenreValidationProps(Integer maxLength, String whitelist) {
 }

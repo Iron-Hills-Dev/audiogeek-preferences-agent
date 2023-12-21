@@ -1,9 +1,8 @@
 package org.codebusters.audiogeek.preferencesagent.application.rest.mygenres;
 
 import org.codebusters.audiogeek.preferencesagent.domain.mygenres.MyGenresQueryPort;
-import org.codebusters.audiogeek.preferencesagent.domain.mygenres.exception.UserNotFoundException;
-import org.codebusters.audiogeek.preferencesagent.domain.mygenres.model.UserID;
 import org.codebusters.audiogeek.preferencesagent.domain.mygenres.model.genre.GenreFactory;
+import org.codebusters.audiogeek.preferencesagent.domain.mygenres.model.user.UserID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,7 +22,6 @@ import static java.nio.file.Files.readString;
 import static org.codebusters.audiogeek.preferencesagent.application.exception.ApiErrorData.NOT_AUTHENTICATED;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -83,19 +81,17 @@ class MyGenresRestAdapterGetTest {
     }
 
     @Test
-    @DisplayName("MyGenresRestAdapter - test if /my-genres GET works correctly when user to not exists")
+    @DisplayName("MyGenresRestAdapter - test if /my-genres GET works correctly when user is not in db")
     void getMyGenresUserDoNotExists() throws Exception {
         // given
-        doThrow(UserNotFoundException.class).when(myGenresQueryPort).getMyGenres(TEST_ID);
-        var expected = new UserNotFoundException();
+        doReturn(Set.of()).when(myGenresQueryPort).getMyGenres(TEST_ID);
 
         // when then
         mvc.perform(get("/api/v1/my-genres")
                         .contentType(APPLICATION_JSON)
                         .header(AUTHORIZATION, TEST_TOKEN_CORRECT))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.code", is(expected.code)))
-                .andExpect(jsonPath("$.message", is(expected.message)));
+                .andExpect(status().isOk())
+                .andExpect(content().json(readString(EMPTY_RESPONSE)));
     }
 
     @Test

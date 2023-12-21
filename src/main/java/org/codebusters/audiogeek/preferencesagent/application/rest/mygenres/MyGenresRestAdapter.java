@@ -2,12 +2,10 @@ package org.codebusters.audiogeek.preferencesagent.application.rest.mygenres;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.codebusters.audiogeek.preferencesagent.application.exception.ApiException;
 import org.codebusters.audiogeek.preferencesagent.domain.mygenres.MyGenresQueryPort;
 import org.codebusters.audiogeek.preferencesagent.domain.mygenres.MyGenresModifyPort;
-import org.codebusters.audiogeek.preferencesagent.domain.mygenres.exception.UserNotFoundException;
-import org.codebusters.audiogeek.preferencesagent.domain.mygenres.model.PutGenresCmd;
-import org.codebusters.audiogeek.preferencesagent.domain.mygenres.model.UserID;
+import org.codebusters.audiogeek.preferencesagent.domain.mygenres.PutGenresCmd;
+import org.codebusters.audiogeek.preferencesagent.domain.mygenres.model.user.UserID;
 import org.codebusters.audiogeek.preferencesagent.application.util.GenreUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -36,14 +34,9 @@ class MyGenresRestAdapter {
      */
     @GetMapping(value = "/my-genres", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<GetMyGenresResponse> getMyGenres(@RequestHeader("Authorization") String token, Authentication authentication) {
-        try {
-            log.info("Processing GET request /my-genres");
-            var payload = extractHuellPayload(authentication);
-            return ResponseEntity.ok(new GetMyGenresResponse(genreUtils.genresToStrings(myGenresQueryPort.getMyGenres(new UserID(payload.id())))));
-        } catch (UserNotFoundException e) {
-            throw new ApiException(e.code, e.message, NOT_FOUND);
-        }
-
+        log.info("Processing GET request /my-genres");
+        var payload = extractHuellPayload(authentication);
+        return ResponseEntity.ok(new GetMyGenresResponse(genreUtils.genresToStrings(myGenresQueryPort.getMyGenres(new UserID(payload.id())))));
     }
 
     /**

@@ -12,8 +12,8 @@ class GenreFactoryConfig {
     GenreFactory genreFactory(@Value("${agent.genre.max-length}") Integer maxLength,
                               @Value("${agent.genre.char-whitelist}") String whitelist) {
 
-        var validationConfig = new GenreValidationConfig(maxLength, whitelist);
-        log.info("Initializing GenreFactory: {}", validationConfig);
-        return new GenreFactory(validationConfig);
+        var validationProps = new GenreValidationProps(maxLength, whitelist);
+        log.info("Initializing GenreFactory: {}", validationProps);
+        return new GenreFactory(validationProps);
     }
 }

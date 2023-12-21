@@ -16,14 +16,14 @@ import static jakarta.persistence.FetchType.EAGER;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-@Table(name = "user-genre")
+@Table(name = "audiogeek-user")
 public class UserEntity {
     @Id
     @Column(name = "id")
     private UUID id;
 
     @ManyToMany(cascade = PERSIST, fetch = EAGER)
-    @JoinTable(name = "user_genre",
+    @JoinTable(name = "user-genre",
             joinColumns = @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "ag_userId_fk")),
             inverseJoinColumns = @JoinColumn(name = "genre_id", foreignKey = @ForeignKey(name = "ag_genreId_fk")))
     private Set<GenreEntity> genres;

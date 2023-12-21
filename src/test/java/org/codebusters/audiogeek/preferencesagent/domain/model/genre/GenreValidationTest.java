@@ -60,7 +60,7 @@ public class GenreValidationTest {
     void createGenreNull() {
         assertThatThrownBy(() -> genreFactory.createGenre(null))
                 .isInstanceOf(GenreException.class)
-                .hasFieldOrPropertyWithValue("code", NULL.code())
-                .hasMessage(NULL.message());
+                .hasFieldOrPropertyWithValue("code", BLANK.code())
+                .hasMessage(BLANK.message());
     }
 }
