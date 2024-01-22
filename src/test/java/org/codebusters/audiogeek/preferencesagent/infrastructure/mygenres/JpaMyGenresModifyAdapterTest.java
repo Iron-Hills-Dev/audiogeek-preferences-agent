@@ -2,9 +2,9 @@ package org.codebusters.audiogeek.preferencesagent.infrastructure.mygenres;
 
 import lombok.extern.slf4j.Slf4j;
 import org.codebusters.audiogeek.preferencesagent.domain.mygenres.PutGenresCmd;
-import org.codebusters.audiogeek.preferencesagent.domain.mygenres.model.user.UserID;
 import org.codebusters.audiogeek.preferencesagent.domain.mygenres.model.genre.Genre;
 import org.codebusters.audiogeek.preferencesagent.domain.mygenres.model.genre.GenreFactory;
+import org.codebusters.audiogeek.preferencesagent.domain.mygenres.model.user.UserID;
 import org.codebusters.audiogeek.preferencesagent.infrastructure.mygenres.db.GenreEntity;
 import org.codebusters.audiogeek.preferencesagent.infrastructure.mygenres.db.UserEntity;
 import org.codebusters.audiogeek.preferencesagent.infrastructure.mygenres.db.repo.GenreRepository;
@@ -17,8 +17,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.IntStream;
 
 import static java.util.UUID.randomUUID;
+import static java.util.concurrent.CompletableFuture.runAsync;
 import static java.util.stream.Collectors.toSet;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -176,9 +180,36 @@ public class JpaMyGenresModifyAdapterTest {
         );
     }
 
-    //TODO: add multi threaded test
-    // given: two commands with the same user but different genres
-    // when: persis in two concurrent threads
+    @Test
+    @DisplayName("Test what happens when multiple threads try to put genres to one user")
+    public void putGenresMultiThreaded() {
+        // given
+        var id = new UserID(UUID.randomUUID());
+
+        // when
+        try {
+            var futures = IntStream.rangeClosed(1, 5)
+                    .mapToObj(i -> runAsync(genreateUniqueRunnable(id, Integer.toString(i))))
+                    .toArray(CompletableFuture<?>[]::new);
+            CompletableFuture.allOf(futures).get();
+        } catch (Exception ignored) {
+        }
+
+        // then
+        var user = userRepo.findById(id.value());
+        log.info("--------TEST RESULT--------");
+        user.ifPresentOrElse(u -> log.info("Created user with genres: {}", u.getGenres()
+                .stream()
+                .map(GenreEntity::getName)
+                .toList()), () -> log.info("User was not created"));
+        log.info("--------TEST RESULT--------");
+    }
+
+    private Runnable genreateUniqueRunnable(UserID id, String runnableId) {
+        var genre = Set.of(genreFactory.createGenre(runnableId));
+        log.info("TEST: Created runnable with id: {}", runnableId);
+        return () -> sut.putMyGenres(new PutGenresCmd(id, genre));
+    }
 
     private Set<GenreEntity> genresToEntity(Set<Genre> genres) {
         return genres.stream()

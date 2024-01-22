@@ -15,7 +15,8 @@
     <description>Audiogeek Preferences Agent</description>
     <properties>
         <java.version>17</java.version>
-        <commons.version>3.13.0</commons.version>
+        <commons-lang3.version>3.14.0</commons-lang3.version>
+        <commons-math3.version>3.6.1</commons-math3.version>
         <lombok.version>1.18.28</lombok.version>
         <jjwt.version>0.12.3</jjwt.version>
         <h2.version>2.2.224</h2.version>
@@ -37,7 +38,12 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>${commons.version}</version>
+            <version>${commons-lang3.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-math3</artifactId>
+            <version>${commons-math3.version}</version>
         </dependency>
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
