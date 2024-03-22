@@ -1,8 +1,7 @@
 package org.codebusters.audiogeek.preferencesagent.application.rest.mygenres;
 
-import org.codebusters.audiogeek.preferencesagent.domain.mygenres.GetMyGenresPort;
-import org.codebusters.audiogeek.preferencesagent.domain.mygenres.PutMyGenresPort;
-import org.codebusters.audiogeek.preferencesagent.domain.mygenres.exception.GenresException;
+import org.codebusters.audiogeek.preferencesagent.domain.mygenres.MyGenresModifyPort;
+import org.codebusters.audiogeek.preferencesagent.domain.mygenres.exception.GenreException;
 import org.codebusters.audiogeek.preferencesagent.domain.mygenres.model.genre.Genre;
 import org.codebusters.audiogeek.preferencesagent.domain.mygenres.model.genre.GenreFactory;
 import org.junit.jupiter.api.DisplayName;
@@ -21,10 +20,9 @@ import java.util.Set;
 import static java.nio.file.Files.readAllBytes;
 import static org.codebusters.audiogeek.preferencesagent.TestErrorData.GENRE_ERROR_TEST;
 import static org.codebusters.audiogeek.preferencesagent.application.exception.ApiErrorData.NOT_AUTHENTICATED;
-import static org.codebusters.audiogeek.preferencesagent.application.rest.mygenres.GetMyGenresRestAdapterTest.*;
+import static org.codebusters.audiogeek.preferencesagent.application.rest.mygenres.MyGenresRestAdapterGetTest.*;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.AdditionalMatchers.not;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.NOT_ACCEPTABLE;
@@ -37,7 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @DisplayName("MyGenresRestAdapter - /my-genres PUT")
-class PutMyGenresRestAdapterTest {
+class MyGenresRestAdapterPutTest {
 
     private static final String PATH_PREFIX = "src/test/resources/application/rest/mygenres/";
     private static final Path CORRECT_REQUEST = Path.of(PATH_PREFIX + "put_request_correct.json");
@@ -47,9 +45,7 @@ class PutMyGenresRestAdapterTest {
     private MockMvc mvc;
 
     @MockBean
-    private GetMyGenresPort getMyGenresPort; // TODO remove after domain implementation
-    @MockBean
-    private PutMyGenresPort putMyGenresPort;
+    private MyGenresModifyPort myGenresModifyPort;
     @SpyBean
     private GenreFactory genreFactory;
 
@@ -60,8 +56,9 @@ class PutMyGenresRestAdapterTest {
         Genre genre1 = genreFactory.createGenre("rock");
         Genre genre2 = genreFactory.createGenre("pop");
         doThrow(new AssertionError("Genres in body and genres given does not match"))
-                .when(putMyGenresPort)
-                .putMyGenres(eq(TEST_ID), not(eq(Set.of(genre1, genre2))));
+                .when(myGenresModifyPort)
+                .putMyGenres(argThat(cmd ->
+                        cmd.id().equals(TEST_ID) && !cmd.genres().equals(Set.of(genre1, genre2))));
 
         // when then
         mvc.perform(put("/api/v1/my-genres")
@@ -75,7 +72,7 @@ class PutMyGenresRestAdapterTest {
     @DisplayName("MyGenresRestAdapter - test if /my-genres PUT handles exception correctly")
     void putMyGenresError() throws Exception {
         // given
-        doThrow(new GenresException(GENRE_ERROR_TEST)).when(genreFactory).createGenre("BAD");
+        doThrow(new GenreException(GENRE_ERROR_TEST)).when(genreFactory).createGenre("BAD");
 
         // when then
         mvc.perform(put("/api/v1/my-genres")
@@ -94,8 +91,9 @@ class PutMyGenresRestAdapterTest {
         Genre genre1 = genreFactory.createGenre("rock");
         Genre genre2 = genreFactory.createGenre("pop");
         doThrow(new AssertionError("Genres in body and genres given does not match"))
-                .when(putMyGenresPort)
-                .putMyGenres(eq(TEST_ID), not(eq(Set.of(genre1, genre2))));
+                .when(myGenresModifyPort)
+                .putMyGenres(argThat(cmd ->
+                        cmd.id().equals(TEST_ID) && !cmd.genres().equals(Set.of(genre1, genre2))));
 
         // when then
         mvc.perform(put("/api/v1/my-genres")

@@ -1,0 +1,26 @@
+
+@startuml
+
+hide circle
+skinparam linetype ortho
+
+entity "audiogeek-user" as user {
+  *id : uuid
+}
+
+entity "genre" as genre {
+  *id : uuid <<generated>>
+  --
+  *name : varchar
+}
+
+entity "user-genre" as userGenre {
+  *user_id : uuid <<PK,FK1>>
+  *genre_id : uuid <<PK,FK2>>
+  --
+}
+
+user ||..o{ userGenre
+userGenre }o..|| genre
+
+@enduml

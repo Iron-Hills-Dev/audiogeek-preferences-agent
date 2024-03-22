@@ -1,9 +1,8 @@
 package org.codebusters.audiogeek.preferencesagent.application.rest.mygenres;
 
-import org.codebusters.audiogeek.preferencesagent.domain.mygenres.GetMyGenresPort;
-import org.codebusters.audiogeek.preferencesagent.domain.mygenres.PutMyGenresPort;
-import org.codebusters.audiogeek.preferencesagent.domain.mygenres.model.UserID;
+import org.codebusters.audiogeek.preferencesagent.domain.mygenres.MyGenresQueryPort;
 import org.codebusters.audiogeek.preferencesagent.domain.mygenres.model.genre.GenreFactory;
+import org.codebusters.audiogeek.preferencesagent.domain.mygenres.model.user.UserID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,7 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
 @DisplayName("MyGenresRestAdapter - /my-genres GET")
-class GetMyGenresRestAdapterTest {
+class MyGenresRestAdapterGetTest {
     private static final String PATH_PREFIX = "src/test/resources/application/rest/mygenres/";
 
     static final UserID TEST_ID = new UserID(UUID.fromString("274fff02-8118-4921-b782-e2765aed8b03"));
@@ -43,22 +42,21 @@ class GetMyGenresRestAdapterTest {
     private static final Path CORRECT_RESPONSE = Path.of(PATH_PREFIX + "get_response_correct.json");
     private static final Path EMPTY_RESPONSE = Path.of(PATH_PREFIX + "get_response_empty.json");
 
+
     @Autowired
     private GenreFactory genreFactory;
     @Autowired
     private MockMvc mvc;
 
     @MockBean
-    private GetMyGenresPort getMyGenresPort;
-    @MockBean
-    private PutMyGenresPort putMyGenresPort; // TODO remove after domain implementation
+    private MyGenresQueryPort myGenresQueryPort;
 
     @Test
     @DisplayName("MyGenresRestAdapter - test if /my-genres GET works correctly")
     void getMyGenresCorrect() throws Exception {
         // given
         doReturn(Set.of(genreFactory.createGenre("rock"), genreFactory.createGenre("pop")))
-                .when(getMyGenresPort).getMyGenres(TEST_ID);
+                .when(myGenresQueryPort).getMyGenres(TEST_ID);
 
         // when then
         mvc.perform(get("/api/v1/my-genres")
@@ -72,7 +70,21 @@ class GetMyGenresRestAdapterTest {
     @DisplayName("MyGenresRestAdapter - test if /my-genres GET works correctly when genres are empty")
     void getMyGenresEmpty() throws Exception {
         // given
-        doReturn(Set.of()).when(getMyGenresPort).getMyGenres(TEST_ID);
+        doReturn(Set.of()).when(myGenresQueryPort).getMyGenres(TEST_ID);
+
+        // when then
+        mvc.perform(get("/api/v1/my-genres")
+                        .contentType(APPLICATION_JSON)
+                        .header(AUTHORIZATION, TEST_TOKEN_CORRECT))
+                .andExpect(status().isOk())
+                .andExpect(content().json(readString(EMPTY_RESPONSE)));
+    }
+
+    @Test
+    @DisplayName("MyGenresRestAdapter - test if /my-genres GET works correctly when user is not in db")
+    void getMyGenresUserDoNotExists() throws Exception {
+        // given
+        doReturn(Set.of()).when(myGenresQueryPort).getMyGenres(TEST_ID);
 
         // when then
         mvc.perform(get("/api/v1/my-genres")
@@ -87,7 +99,7 @@ class GetMyGenresRestAdapterTest {
     void getMyGenresNotAuthorized() throws Exception {
         // given
         doReturn(Set.of(genreFactory.createGenre("rock"), genreFactory.createGenre("pop")))
-                .when(getMyGenresPort).getMyGenres(TEST_ID);
+                .when(myGenresQueryPort).getMyGenres(TEST_ID);
 
         // when then
         mvc.perform(get("/api/v1/my-genres")

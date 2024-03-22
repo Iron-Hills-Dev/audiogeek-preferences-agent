@@ -1,4 +1,4 @@
-package org.codebusters.audiogeek.preferencesagent.application.auth.token;
+package org.codebusters.audiogeek.preferencesagent.shared.huelltoken;
 
 import java.util.UUID;
 

@@ -1,9 +1,9 @@
-package org.codebusters.audiogeek.preferencesagent.application.rest.mygenres;
+package org.codebusters.audiogeek.preferencesagent.application.util;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.codebusters.audiogeek.preferencesagent.application.exception.ApiException;
-import org.codebusters.audiogeek.preferencesagent.domain.mygenres.exception.GenresException;
+import org.codebusters.audiogeek.preferencesagent.domain.mygenres.exception.GenreException;
 import org.codebusters.audiogeek.preferencesagent.domain.mygenres.model.genre.Genre;
 import org.codebusters.audiogeek.preferencesagent.domain.mygenres.model.genre.GenreFactory;
 import org.springframework.stereotype.Component;
@@ -13,28 +13,25 @@ import java.util.Set;
 import static java.util.stream.Collectors.toSet;
 import static org.springframework.http.HttpStatus.NOT_ACCEPTABLE;
 
-/**
- * Converting Genre class to string and vice versa
- */
+@Slf4j
 @Component
 @RequiredArgsConstructor
-@Slf4j
-class GenreConverter {
+public class GenreUtils {
 
     private final GenreFactory genreFactory;
 
-    public Set<Genre> toGenres(Set<String> genres) {
+    public Set<Genre> stringsToGenres(Set<String> genres) {
         log.trace("Converting genres string to Genres, genres: {}", genres.toString());
         try {
             return genres.stream()
                     .map(genreFactory::createGenre)
                     .collect(toSet());
-        } catch (GenresException err) {
+        } catch (GenreException err) {
             throw new ApiException(err.code(), err.message(), NOT_ACCEPTABLE);
         }
     }
 
-    public Set<String> toString(Set<Genre> genres) {
+    public Set<String> genresToStrings(Set<Genre> genres) {
         log.trace("Converting genres to string");
         return genres.stream()
                 .map(Genre::value)

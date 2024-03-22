@@ -1,6 +1,6 @@
 package org.codebusters.audiogeek.preferencesagent.application.auth;
 
-import org.codebusters.audiogeek.preferencesagent.application.auth.token.HuellToken;
+import org.codebusters.audiogeek.preferencesagent.shared.huelltoken.HuellToken;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;

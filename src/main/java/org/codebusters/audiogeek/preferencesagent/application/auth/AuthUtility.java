@@ -1,6 +1,6 @@
 package org.codebusters.audiogeek.preferencesagent.application.auth;
 
-import org.codebusters.audiogeek.preferencesagent.application.auth.token.HuellTokenPayload;
+import org.codebusters.audiogeek.preferencesagent.shared.huelltoken.HuellTokenPayload;
 import org.springframework.security.core.Authentication;
 
 public class AuthUtility {
