@@ -9,7 +9,6 @@ spring:
     url: jdbc:h2:mem:agent-test
     username: gt
     password: gt
-
   jpa:
     hibernate:
       ddl-auto: create
@@ -17,8 +16,7 @@ spring:
     show-sql: true
 
 jwt:
-  secret: B8444269FC8F514C79FDE4631EE9EF22162211D
-  algorithm: hmacSHA256
+  secret: N1y2rHlRiosNm9fiWgpArgj2eLxxhdIy
 
 agent:
   genre:

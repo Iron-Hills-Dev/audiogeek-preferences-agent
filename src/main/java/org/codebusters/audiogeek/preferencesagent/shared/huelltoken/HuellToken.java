@@ -3,14 +3,16 @@ package org.codebusters.audiogeek.preferencesagent.shared.huelltoken;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
+import io.jsonwebtoken.security.WeakKeyException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 
-import javax.crypto.spec.SecretKeySpec;
 import java.util.UUID;
 
-import static io.jsonwebtoken.Jwts.parser;
 import static org.codebusters.audiogeek.preferencesagent.shared.huelltoken.ErrorData.*;
 
 
@@ -18,7 +20,6 @@ import static org.codebusters.audiogeek.preferencesagent.shared.huelltoken.Error
 @RequiredArgsConstructor
 public class HuellToken {
     private final String secret;
-    private final String algorithm;
 
     /**
      * Parses given JWT with rules of Huell
@@ -37,37 +38,42 @@ public class HuellToken {
         } catch (SignatureException e) {
             log.warn("Token is signed with wrong signature");
             throw new HuellTokenException(WRONG_SIGNATURE);
-        } catch (IllegalArgumentException e) {
-            log.warn("Token has incorrect payload");
-            throw new HuellTokenException(WRONG_PAYLOAD);
+        } catch (WeakKeyException e) {
+            log.warn("Signature is too weak");
+            throw new HuellTokenException(WEAK_SIGNATURE);
         }
     }
 
     /**
-     * Parses JWT using Java JWT library
+     * Parses JWT
      *
-     * @param jwt JWT
-     * @return Payload in Claims
+     * @param jwt token
+     * @return Claims of token
      */
     private Jws<Claims> parseJwt(String jwt) {
-        log.trace("Parsing JWT: algorithm={}", algorithm);
-        var KEY = new SecretKeySpec(secret.getBytes(), algorithm);
-        return parser()
-                .verifyWith(KEY)
+        log.trace("Parsing JWT");
+        var secretKey = Keys.hmacShaKeyFor(secret.getBytes());
+        return Jwts.parser()
+                .verifyWith(secretKey)
                 .build()
                 .parseSignedClaims(jwt);
     }
 
     /**
-     * Converts Claims payload with rules of Huell
+     * Converts Claims payload by rules of Huell
      *
-     * @param claims parsed JWT
+     * @param claims parsed JWT in Claims
      * @return Readable class
      */
     private HuellTokenPayload convertToPayload(Jws<Claims> claims) {
         log.trace("Converting to payload");
-        return new HuellTokenPayload(
-                UUID.fromString(claims.getPayload().get("user_id", String.class)));
+        try {
+            return new HuellTokenPayload(
+                    UUID.fromString(claims.getPayload().get("user_id", String.class)));
+        } catch (NullPointerException | IllegalArgumentException e) {
+            throw new HuellTokenException(WRONG_PAYLOAD);
+        }
+
     }
 
 }
