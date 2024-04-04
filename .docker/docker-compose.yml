@@ -8,10 +8,10 @@ services:
     environment:
       JVM_OPTS: -Xmx512m -Xms512m
       AGENT_LOG_LEVEL: debug
-      AGENT_DATABASE_DATASOURCE_URL: jdbc:postgresql://agent-postgres:5432/agent?createDatabaseIfNotExist=true
+      AGENT_DB_URL: jdbc:postgresql://agent-postgres:5432/agent?createDatabaseIfNotExist=true
       AGENT_SECRET: eme2dqb1TKMqmdoI2n9ooO91z6Ag9d7raJXwj70crls7Djmb9-hCok3nETJkg1ANP6EHraOkpoRLRzQWusecmg
-      AGENT_DATABASE_USER: agent
-      AGENT_DATABASE_PASSWORD: agent
+      AGENT_DB_USER: agent
+      AGENT_DB_PASSWORD: agent
     ports:
       - "6500:6500"
     depends_on:
