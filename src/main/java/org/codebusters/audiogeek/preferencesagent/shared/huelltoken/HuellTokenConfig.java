@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 class HuellTokenConfig {
     @Bean
-    HuellToken huellToken(@Value("${jwt.secret}") String secret, @Value("${jwt.algorithm}") String algorithm) {
-        return new HuellToken(secret, algorithm);
+    HuellToken huellToken(@Value("${jwt.secret}") String secret) {
+        return new HuellToken(secret);
     }
 }

@@ -3,9 +3,26 @@ logging:
     root: info
     org.codebusters: ${AGENT_LOG_LEVEL:info}
 
+spring:
+  datasource:
+    # jdbc:postgresql://localhost:5432/dbName
+    url: ${AGENT_DB_URL}
+    username: ${AGENT_DB_USER}
+    password: ${AGENT_DB_PASSWORD}
+    hikari:
+      maximum-pool-size: ${AGENT_DB_POOL_SIZE:5}
+      connection-timeout: ${AGENT_DB_CONNECTION_TIMEOUT:5000}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: false
+  mvc:
+    throw-exception-if-no-handler-found: true
+
 jwt:
   secret: ${AGENT_SECRET}
-  algorithm: ${AGENT_JWT_ALGORITHM:hmacSHA512}
 
 agent:
   genre:

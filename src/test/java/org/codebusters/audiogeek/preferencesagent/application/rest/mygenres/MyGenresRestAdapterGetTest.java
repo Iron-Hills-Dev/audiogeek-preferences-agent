@@ -36,8 +36,8 @@ class MyGenresRestAdapterGetTest {
     private static final String PATH_PREFIX = "src/test/resources/application/rest/mygenres/";
 
     static final UserID TEST_ID = new UserID(UUID.fromString("274fff02-8118-4921-b782-e2765aed8b03"));
-    static final String TEST_TOKEN_CORRECT = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJIVUVMTCIsInN1YiI6IkhVRUxMIiwiaWF0IjoxNjk5NjQ5NzYzLCJ1c2VyX2lkIjoiMjc0ZmZmMDItODExOC00OTIxLWI3ODItZTI3NjVhZWQ4YjAzIn0.GDvOyMPft_R18aZOtiG0pd4DNC6Wju58RAJWx3wY-aQ";
-    static final String TEST_TOKEN_INVALID = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJIVUVMTCIsInN1YiI6IkhVRUxMIiwiaWF0IjoxNjk5NjQ5NzYzLCJ1c2VyX2lkIjoiMjc0ZmZmMDItODExOC00OTIxLWI3ODItZTI3NjVhZWQ4YjAzIn0.fCYLVPg1dSwqjpvNOaYae95AHMYwfW7IRAVbDl4qnqY";
+    static final String TEST_TOKEN_CORRECT = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJIVUVMTCIsInN1YiI6IkhVRUxMIiwiaWF0IjoxNjk5NjQ5NzYzLCJ1c2VyX2lkIjoiMjc0ZmZmMDItODExOC00OTIxLWI3ODItZTI3NjVhZWQ4YjAzIn0.aL-fpyscARHlZTbTqTqfvZ58RUOoBd-jNtFeDHcwNyk";
+    static final String TEST_TOKEN_INVALID = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJIVUVMTCIsInN1YiI6IkhVRUxMIiwiaWF0IjoxNjk5NjQ5NzYzLCJ1c2VyX2lkIjoiMjc0ZmZmMDItODExOC00OTIxLWI3ODItZTI3NjVhZWQ4YjAzIn0.Si_TtkwtoPZOZRAfBo35cNSEpC0DE7Z_mjiyPOeQ_u8";
 
     private static final Path CORRECT_RESPONSE = Path.of(PATH_PREFIX + "get_response_correct.json");
     private static final Path EMPTY_RESPONSE = Path.of(PATH_PREFIX + "get_response_empty.json");
